@@ -1,0 +1,7 @@
+POST https://powerful-reaches-81596.herokuapp.com/api/persons
+Content-Type: application/json
+
+{
+    "name":"Simo",
+    "number": "11344652"
+}
