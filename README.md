@@ -1,1 +1,1 @@
-# https://powerful-reaches-81596.herokuapp.com/api/persons
+# https://powerful-reaches-81596.herokuapp.com
