@@ -1,21 +1,18 @@
 require('dotenv').config()
 const express = require('express')
-const req = require('express/lib/request')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
-const { response } = require('express')
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 app.use(morgan('tiny'))
 app.use(morgan(':body', {
-  skip: function (req, res) { return req.method ==='GET' || req.method === 'DELETE' }}))
+  skip: function (req) { return req.method ==='GET' || req.method === 'DELETE' } }))
 
-
-morgan.token('body', function (req, res) { 
+morgan.token('body', function (req) {
   return JSON.stringify(req.body)})
 
 const generateId = () => {
@@ -53,11 +50,9 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
-  Person.findByIdAndRemove(id)
-  .then(result => {
+  Person.findByIdAndRemove(id).then(res => {
     res.status(204).end()
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.post('/api/persons', (req,res, next) => {
@@ -70,7 +65,6 @@ app.post('/api/persons', (req,res, next) => {
   })
   person.save()
     .then(savedNote => {
-      console.log(savedNote)
       res.json(savedNote)
     })
     .catch(error => next(error))
@@ -78,21 +72,15 @@ app.post('/api/persons', (req,res, next) => {
 
 app.put('/api/persons/:id', (req,res, next) => {
   const body = req.body
-  
   const person = {
     name: body.name,
     number: body.number
   }
 
-  Person.findByIdAndUpdate(req.params.id, person, { 
-      new: true, 
-      runValidators: true, 
-      context: 'query' 
-    })
-  .then(updatedPerson => {
+  Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators: true,
+    context: 'query' }).then(updatedPerson => {
     res.json(updatedPerson)
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
